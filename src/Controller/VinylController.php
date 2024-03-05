@@ -2,16 +2,17 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Twig\Environment;
+use function Symfony\Component\String\u;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use function Symfony\Component\String\u;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 
 
 class VinylController extends AbstractController
 {
-    #[Route("/")]
+    #[Route('/', name: 'app_homepage')]
     function homepage(): Response
     {
         $tracks = [
@@ -27,15 +28,13 @@ class VinylController extends AbstractController
             'tracks' => $tracks,
         ]);
     }
-    #[Route("/browse/{slug}")]
+    #[Route('/browse/{slug}', name: 'app_browse')]
     function browse(string $slug = null): Response
     {
-        if ($slug) {
-            $title = "Genre: " . u(str_replace("-", " ", $slug))->title(true);
-        } else {
-            $title = "All Genre";
-        }
+        $genre = $slug ? u(str_replace("-", " ", $slug))->title(true) : null;
 
-        return new Response($title);
+        return $this->render('vinyl/browse.html.twig', [
+            'genre' => $genre,
+        ]);
     }
 }
